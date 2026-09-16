@@ -1,7 +1,7 @@
 # Squoosh CLI
 
 Squoosh CLI is an experimental way to run all the codecs you know from the
-[Squoosh](https://squoosh.frostoven.com) web app on your command line using
+[Squoosh](https://squoosh.app) web app on your command line using
 WebAssembly. The Squoosh CLI uses a worker pool to parallelize processing
 images. This way you can apply the same codec to many images at once.
 
@@ -82,6 +82,6 @@ You can make use of the auto optimizer by using “auto” as the config object.
 $ squoosh-cli --wp2 auto test.png
 ```
 
-[squoosh]: https://squoosh.frostoven.com
+[squoosh]: https://squoosh.app
 [codecs.ts]: https://github.com/tecarta/squoosh-cli/blob/main/libsquoosh/src/codecs.ts
 [butteraugli]: https://github.com/google/butteraugli

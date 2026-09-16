@@ -1,97 +1,125 @@
-# Tecarta fork
+# Squoosh CLI (Tecarta fork)
+
+Command-line image compression with the Squoosh codecs (MozJPEG, WebP, AVIF,
+JPEG XL, WebP2, OxiPNG) on current Node: 20, 22, 24 and later.
 
 This is [Tecarta](https://github.com/tecarta)'s fork of
 [Frostoven's Squoosh-with-CLI](https://github.com/frostoven/Squoosh-with-CLI),
 itself a fork of Google's [Squoosh](https://github.com/GoogleChromeLabs/squoosh)
-that kept the CLI alive after Google removed it.
+that kept the CLI alive after Google removed it in 2023. Neither upstream runs
+on Node 22 or later. This one does.
 
-What is different here:
+## Install
 
-- **Runs on current Node (20, 22, 24 and later).** `libsquoosh` now reads each
-  wasm codec from disk and hands the bytes to Emscripten directly. Previously it
-  let Emscripten's loader find them, which on Node 18+ meant calling the global
-  `fetch()` on a filesystem path and failing. The old workaround, launching node
-  with `--no-experimental-fetch`, stopped working when Node 22 removed the flag.
-- **`--jxl` works again.** libsquoosh's default JPEG XL options were from an
-  older encoder build (`speed`, `nearLossless`) and lacked the `effort` field the
-  bundled encoder requires, so every JXL encode failed. The CLI then logged the
-  rejection but never exited. Defaults now match the encoder, and the CLI exits
-  non-zero on an unhandled failure.
-- **Packages renamed** to `@tecarta/squoosh-cli` and `@tecarta/libsquoosh`, and
-  the child-process launcher (`prod.js` / `debug.js`) is gone; the CLI is a plain
-  bin again.
-- **Self-contained builds.** `scripts/build-cli.sh` produces a tarball with
-  libsquoosh bundled, published as a GitHub release asset. See
-  [cli/README.md](cli/README.md) for install instructions.
-- **CI** builds and smoke-tests every codec on Node 20/22/24, Linux and macOS.
+```sh
+npm i -g --allow-remote=all https://github.com/tecarta/squoosh-cli/releases/latest/download/tecarta-squoosh-cli.tgz
+```
 
-Only `cli/`, `libsquoosh/` and the build plumbing were touched. The web app under
-`src/` is as upstream left it.
+`--allow-remote=all` is needed on npm 12 and later, which refuse tarball URLs
+by default. npm 11 and older ignore the flag. The tarball bundles
+`@tecarta/libsquoosh`, so nothing else is required. Versioned tarballs are on
+the [releases page](https://github.com/tecarta/squoosh-cli/releases). The
+packages are not on npm, so `npx @tecarta/squoosh-cli` does not work.
+
+## Usage
+
+```
+squoosh-cli [options] <files...>
+```
+
+```sh
+# WebP and AVIF at auto-tuned quality, into ./out
+squoosh-cli --webp auto --avif auto -d out photo.png
+
+# Resize to 1600px wide, then MozJPEG at quality 75, for every JPEG here
+squoosh-cli --resize '{"width":1600}' --mozjpeg '{"quality":75}' -d out *.jpg
+
+# Lossless PNG optimisation after reducing to a 256-colour palette
+squoosh-cli --quant '{"numColors":256}' --oxipng '{"level":2}' -d out icons/
+```
+
+Each codec flag takes `auto` or a JSON5 config object. The full option list,
+the auto optimizer and its Butteraugli target are documented in
+[cli/README.md](cli/README.md). Per-codec defaults live in
+[libsquoosh/src/codecs.ts](libsquoosh/src/codecs.ts) under
+`defaultEncoderOptions`.
+
+## Build from source
+
+Requires Node 20 or newer.
+
+```sh
+git clone https://github.com/tecarta/squoosh-cli.git
+cd squoosh-cli
+./scripts/build-cli.sh
+npm i -g ./dist/tecarta-squoosh-cli-*.tgz
+```
+
+The script builds `libsquoosh`, packs it, installs that tarball into `cli/`,
+and packs the CLI with it bundled. A bare `npm install` inside `cli/` fails by
+design: it depends on `@tecarta/libsquoosh`, which is not on any registry.
+Write the install path as `./dist/...`; npm reads a bare `dist/...` as a
+GitHub `owner/repo` shorthand.
+
+To cut a release: bump the versions in `cli/package.json` and
+`libsquoosh/package.json`, run the build script, then
+
+```sh
+cp dist/tecarta-squoosh-cli-<version>.tgz dist/tecarta-squoosh-cli.tgz
+gh release create v<version> --target main dist/*.tgz
+```
+
+The unversioned copy is what the install URL above resolves to.
+
+## What changed in this fork
+
+- **Runs on current Node.** `libsquoosh` now reads each wasm codec from disk
+  and hands the bytes to Emscripten as `wasmBinary`. Previously it let
+  Emscripten's loader find them, which on Node 18+ meant calling the global
+  `fetch()` on a filesystem path and failing. Frostoven's workaround, a
+  child-process launcher that started node with `--no-experimental-fetch`,
+  stopped working when Node 22 removed the flag. The launcher is gone and the
+  CLI is a plain bin again.
+- **`--jxl` works.** The default JPEG XL options came from an older encoder
+  build and lacked the `effort` field the bundled encoder requires, so every
+  JXL encode failed and the CLI hung. Defaults now match the encoder.
+- **Failures exit non-zero** instead of leaving idle worker threads holding the
+  process open.
+- **Packages renamed** to `@tecarta/squoosh-cli` and `@tecarta/libsquoosh`,
+  engines set to Node 20+.
+- **Self-contained tarball** via `scripts/build-cli.sh`, distributed as a
+  GitHub release asset.
+- **CI** builds and runs every codec on Node 20/22/24, Linux and macOS.
+
+Codec output is byte-identical to `@frostoven/squoosh-cli` 0.9.1.
+
+## Lineage and credits
+
+- **Google's Squoosh** built the web app, the codecs and the original
+  `@squoosh/cli`, then removed the CLI and `libsquoosh` from the project in 2023.
+- **Frostoven's Squoosh-with-CLI** kept the CLI going: it fixed the CLI trying
+  to load every input image at once (concurrency now defaults to your core
+  count, override with `-c`), fixed terminal output corrupting on large
+  batches, made custom codec options actually apply, and added Node 18 support.
+  Frostoven hosts their variant of the web app at squoosh.frostoven.com.
+- **This fork** adds Node 20+ support without the removed flag, the JXL fix,
+  and the packaging above.
+
+## Repository layout
+
+- `cli/` is the CLI, `@tecarta/squoosh-cli`.
+- `libsquoosh/` is the Node library that wraps the wasm codecs,
+  `@tecarta/libsquoosh`.
+- `codecs/` holds the codec sources and their prebuilt wasm.
+- `scripts/build-cli.sh` builds both packages and produces the release tarball.
+- `src/` and `staticPages/` are the Squoosh web app, untouched from upstream.
+  Tecarta does not build or host it. If you work on it, Frostoven's notes
+  apply: delete `.tmp` and `build` before a production build, and test the
+  static pages with `npx http-server staticPages`.
 
 ---
 
-# Fork details
-
-Google has removed all CLI features from their
-[Squoosh](https://github.com/GoogleChromeLabs/squoosh) project.
-
-This fork merges newer Squoosh browser features with the old removed CLI stuff.
-It does not aim to strictly retain compatibility with the original project, but
-does aim to preserve old CLI functionality, including the
-[UI CLI command generator](https://squoosh.frostoven.com/cli/preview.png).
-
-**Usage:**
-
-- This fork currently runs over at https://squoosh.frostoven.com
-- Installation and usage details here: https://squoosh.frostoven.com/cli
-
-### Maintenance info
-
-For now, the core purpose of this fork is to fix bugs in the CLI portion of the
-code. The CLI portion had quite a few problems when it was retired from the
-original project, many of which are now fixed in this fork.
-
-I maintain these features and fix bugs in my spare time, and generally have my
-hands full with an
-[indie game I'm making](https://github.com/frostoven/Cosmosis).
-Please consider
-[supporting my work](https://www.patreon.com/frostoven)
-to get more hands on deck; I would like to hire someone to work on this project
-full-time so that it may reach its full potential.
-
-### Change from the original
-
-First off, I'd like to give a huge thank you to everyone who has contributed to
-this fork!
-
-Major changes:
-* Fixes an issue where the original Squoosh CLI would attempt to consume all
-  target images at once, causing Node to crash when dealing with data exceeding
-  ~500MB (the max concurrent image limit is now automatically set to your CPU
-  core count, override with `-c your_number`). This fork has been confirmed to
-  work with datasets exceeding 10GB containing thousands of images.
-* Fixes an issue where the CLI terminal output would corrupt when processing a
-  large amount of images.
-* The original CLI tool ignored almost all custom user options. This is
-  (hopefully) completely fixed now.
-* This fork adds Node 18+ support.
-
-### Build info
-
-**Important:** Always delete `.tmp` and `build` before doing a prod build, and
-delete `.tmp` if you're experiencing weird bugs during development. It appears
-to occasionally get corrupted by some process duplication.
-
-This fork introduces additional pages as static HTML. I didn't have the time to
-figure out how to correctly hook this up into the dev process (though it's
-integrated into prod); for now, static pages can be tested in dev with
-`npx http-server staticPages`.
-
-<br>
-
-_The original README follows below._
-
----
+_The original Squoosh README follows._
 
 # [Squoosh]!
 
@@ -130,4 +158,4 @@ To develop for Squoosh:
 
 Squoosh is an open-source project that appreciates all community involvement. To contribute to the project, follow the [contribute guide](/CONTRIBUTING.md).
 
-[squoosh]: https://squoosh.frostoven.com
+[squoosh]: https://squoosh.app
