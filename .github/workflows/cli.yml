@@ -36,7 +36,7 @@ jobs:
       - name: Build libsquoosh and pack the CLI with it bundled
         run: ./scripts/build-cli.sh
       - name: Install the tarball globally
-        run: npm i -g dist/tecarta-squoosh-cli-*.tgz
+        run: npm i -g ./dist/tecarta-squoosh-cli-*.tgz
       - name: Run every codec once
         run: |
           squoosh-cli --version

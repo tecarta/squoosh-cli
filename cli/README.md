@@ -37,7 +37,7 @@ To build from source (Node 20 or newer):
 $ git clone https://github.com/tecarta/squoosh-cli.git
 $ cd squoosh-cli
 $ ./scripts/build-cli.sh
-$ npm i -g dist/tecarta-squoosh-cli-*.tgz
+$ npm i -g ./dist/tecarta-squoosh-cli-*.tgz
 ```
 
 The packages are not published to npm at the moment, so `npx @tecarta/squoosh-cli`
