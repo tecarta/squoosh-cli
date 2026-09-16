@@ -1,6 +1,6 @@
 {
-  "name": "@frostoven/libsquoosh",
-  "version": "0.4.8",
+  "name": "@tecarta/libsquoosh",
+  "version": "0.5.0",
   "description": "The Node backend of the Squoosh CLI package",
   "public": true,
   "main": "./build/index.js",
@@ -12,14 +12,17 @@
   },
   "keywords": [],
   "author": "Google Chrome Developers <chromium-dev@google.com>",
-  "homepage": "https://squoosh.frostoven.com",
+  "homepage": "https://github.com/tecarta/squoosh-cli",
   "repository": {
     "type": "git",
-    "url": "git@github.com:frostoven/Squoosh-with-CLI.git"
+    "url": "git+https://github.com/tecarta/squoosh-cli.git"
   },
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "wasm-feature-detect": "^1.2.11",

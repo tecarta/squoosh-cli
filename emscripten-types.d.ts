@@ -14,6 +14,9 @@ declare namespace EmscriptenWasm {
     noInitialRun?: boolean;
     locateFile?: (url: string) => string;
     onRuntimeInitialized?: () => void;
+    // Pre-loaded wasm bytes. When set, the generated loader skips every
+    // fetch()/instantiateStreaming path and instantiates from these directly.
+    wasmBinary?: ArrayBuffer | Uint8Array;
   }
 
   interface Module {

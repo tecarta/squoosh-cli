@@ -1,22 +1,20 @@
 {
-  "name": "@frostoven/squoosh-cli",
-  "version": "0.9.1",
+  "name": "@tecarta/squoosh-cli",
+  "version": "0.10.0",
   "description": "A CLI for Squoosh",
   "public": true,
   "type": "module",
-  "homepage": "https://squoosh.frostoven.com",
+  "homepage": "https://github.com/tecarta/squoosh-cli",
   "repository": {
     "type": "git",
-    "url": "git@github.com:frostoven/Squoosh-with-CLI.git"
+    "url": "git+https://github.com/tecarta/squoosh-cli.git",
+    "directory": "cli"
   },
   "bin": {
-    "squoosh-cli": "src/prod.js",
-    "@frostoven/squoosh-cli": "src/prod.js",
-    "@frostoven/squoosh-cli-debug": "src/debug.js"
+    "squoosh-cli": "src/index.js"
   },
   "files": [
-    "/src/index.js",
-    "/src/prod.js"
+    "/src/index.js"
   ],
   "keywords": [
     "image",
@@ -26,14 +24,20 @@
   ],
   "author": "Google Chrome Developers <chromium-dev@google.com>",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "@frostoven/libsquoosh": "^0.4.8",
+    "@tecarta/libsquoosh": "^0.5.0",
     "commander": "7.2.0",
     "json5": "2.2.0",
     "kleur": "4.1.4",
     "ora": "5.4.0"
-  }
+  },
+  "bundleDependencies": [
+    "@tecarta/libsquoosh"
+  ]
 }

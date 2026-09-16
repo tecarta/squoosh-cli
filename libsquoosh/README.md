@@ -1,7 +1,7 @@
 # libSquoosh
 
 libSquoosh is an _experimental_ JavaScript backend used by its related
-[CLI package](https://www.npmjs.com/package/@frostoven/squoosh-cli). While you
+[CLI package](https://github.com/tecarta/squoosh-cli). While you
 may use this library in your own projects, please beware that it's not
 considered production-ready for general use, and there are no immediate plans
 to make it so. If you use this package, you do so at your own risk.
@@ -13,22 +13,26 @@ libSquoosh is currently not the fastest image compression tool in town and
 doesn't aim to be. It is, however, fast enough to compress many images
 sufficiently quick at once.
 
-Please note that this is a fork of
-[the original library](https://www.npmjs.com/package/@squoosh/lib), which has
-since been retired. This fork continues that work and has some bug fixes.
+This is Tecarta's fork of
+[the original library](https://www.npmjs.com/package/@squoosh/lib), which Google
+retired, by way of [Frostoven's fork](https://github.com/frostoven/Squoosh-with-CLI),
+which kept it alive through Node 16. This fork makes it run on current Node
+(20, 22, 24 and later) by loading the wasm codecs directly instead of through
+`fetch()`, so it no longer needs the `--no-experimental-fetch` flag that
+Node 22 removed.
 
 ## Installation
 
 libSquoosh can be installed to your local project with the following command:
 
 ```
-$ npm install @frostoven/libsquoosh
+$ npm install @tecarta/libsquoosh
 ```
 
 You can start using the libSquoosh by adding these lines to the top of your JS program:
 
 ```js
-import { ImagePool } from '@frostoven/libsquoosh';
+import { ImagePool } from '@tecarta/libsquoosh';
 import { cpus } from 'os';
 const imagePool = new ImagePool(cpus().length);
 ```

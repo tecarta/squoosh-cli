@@ -10,21 +10,19 @@ import ora from 'ora';
 import kleur from 'kleur';
 import EventEmitter from 'events';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
-import { ImagePool, preprocessors, encoders } from '@frostoven/libsquoosh';
+import { ImagePool, preprocessors, encoders } from '@tecarta/libsquoosh';
 // import { ImagePool, preprocessors, encoders } from '../../libsquoosh/build/index.js';
 
 let cliVersion;
 let libVersion;
 try {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const packageJson = JSON.parse(fs.readFileSync(
-    `${__dirname}/../package.json`).toString(),
-  );
-  const libJson = JSON.parse(fs.readFileSync(
-    `${__dirname}/../node_modules/@frostoven/libsquoosh/package.json`).toString(),
-  );
+  // Resolve through Node's own algorithm so this works whether libsquoosh is
+  // hoisted, nested, or bundled inside this package.
+  const require = createRequire(import.meta.url);
+  const packageJson = require('../package.json');
+  const libJson = require('@tecarta/libsquoosh/package.json');
   cliVersion = 'v' + packageJson.version;
   libVersion = 'v' + libJson.version;
 }
@@ -39,6 +37,9 @@ EventEmitter.defaultMaxListeners = 64;
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error(`Unhandled Rejection:`, promise, '\nTrace:', { reason });
+  // Worker threads keep the event loop alive, so without this a single failed
+  // encode leaves the CLI hanging forever with no further output.
+  process.exit(1);
 });
 
 function clamp(v, min, max) {

@@ -410,14 +410,18 @@ export const codecs = {
         jxlEnc as EmscriptenWasm.ModuleFactory<JXLEncodeModule>,
         jxlEncWasm,
       ),
+    // Must match JXLOptions in codecs/jxl/enc/jxl_enc.cpp exactly: embind
+    // rejects the call with 'Missing field' if any registered field is absent.
+    // Same values as the web app's src/features/encoders/jxl/shared/meta.ts.
     defaultEncoderOptions: {
-      speed: 4,
+      effort: 7,
       quality: 75,
       progressive: false,
       epf: -1,
-      nearLossless: 0,
       lossyPalette: false,
       decodingSpeedTier: 0,
+      photonNoiseIso: 0,
+      lossyModular: false,
     },
     autoOptimize: {
       option: 'quality',

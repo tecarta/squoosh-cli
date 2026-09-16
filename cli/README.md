@@ -9,24 +9,39 @@ Squoosh CLI is currently not the fastest image compression tool in town and
 doesn't aim to be. It is, however, fast enough to compress many images
 sufficiently quick at once.
 
-Please note that this is a fork of
-[the original library](https://www.npmjs.com/package/@squoosh/cli), which has
-since been retired. This fork continues that work and has some bugs fixes.
+This is Tecarta's fork of
+[the original CLI](https://www.npmjs.com/package/@squoosh/cli), which Google
+retired, by way of [Frostoven's fork](https://github.com/frostoven/Squoosh-with-CLI),
+which kept it alive through Node 16. This fork runs on current Node (20, 22,
+24 and later). The wasm codecs are now loaded straight from disk instead of
+through `fetch()`, which removes the need for the `--no-experimental-fetch`
+flag that Node 22 dropped, and with it the child-process launcher.
 
 ## Installation
 
-The Squoosh CLI can be used straight from the command line without installing using `npx`:
+Install the latest release straight from GitHub. The tarball bundles
+`@tecarta/libsquoosh`, so no npm account or registry configuration is needed:
 
 ```
-$ npx @frostoven/squoosh-cli <options...>
-```
-
-Of course, you can also install the Squoosh CLI:
-
-```
-$ npm i -g @frostoven/squoosh-cli
+$ npm i -g https://github.com/tecarta/squoosh-cli/releases/latest/download/tecarta-squoosh-cli.tgz
 $ squoosh-cli <options...>
 ```
+
+To pin a version, use the versioned asset from the
+[releases page](https://github.com/tecarta/squoosh-cli/releases), e.g.
+`.../releases/download/v0.10.0/tecarta-squoosh-cli-0.10.0.tgz`.
+
+To build from source (Node 20 or newer):
+
+```
+$ git clone https://github.com/tecarta/squoosh-cli.git
+$ cd squoosh-cli
+$ ./scripts/build-cli.sh
+$ npm i -g dist/tecarta-squoosh-cli-*.tgz
+```
+
+The packages are not published to npm at the moment, so `npx @tecarta/squoosh-cli`
+will not work until they are.
 
 ## Usage
 
@@ -61,9 +76,9 @@ Squoosh CLI has an _experimental_ auto optimizer that compresses an image as muc
 You can make use of the auto optimizer by using “auto” as the config object.
 
 ```
-$ npx @frostoven/squoosh-cli --wp2 auto test.png
+$ squoosh-cli --wp2 auto test.png
 ```
 
 [squoosh]: https://squoosh.frostoven.com
-[codecs.ts]: https://github.com/GoogleChromeLabs/squoosh/blob/dev/libsquoosh/src/codecs.ts
+[codecs.ts]: https://github.com/tecarta/squoosh-cli/blob/main/libsquoosh/src/codecs.ts
 [butteraugli]: https://github.com/google/butteraugli

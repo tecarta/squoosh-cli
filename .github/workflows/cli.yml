@@ -1,0 +1,55 @@
+name: CLI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cli/**'
+      - 'libsquoosh/**'
+      - 'codecs/**'
+      - 'scripts/**'
+      - 'emscripten-types.d.ts'
+      - '.github/workflows/cli.yml'
+  pull_request:
+    paths:
+      - 'cli/**'
+      - 'libsquoosh/**'
+      - 'codecs/**'
+      - 'scripts/**'
+      - 'emscripten-types.d.ts'
+      - '.github/workflows/cli.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-smoke-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Build libsquoosh and pack the CLI with it bundled
+        run: ./scripts/build-cli.sh
+      - name: Install the tarball globally
+        run: npm i -g dist/tecarta-squoosh-cli-*.tgz
+      - name: Run every codec once
+        run: |
+          squoosh-cli --version
+          mkdir -p out
+          squoosh-cli \
+            --quant '{"numColors":64}' --resize '{"width":128}' \
+            --mozjpeg auto --webp '{"quality":75}' --avif '{"cqLevel":33}' \
+            --jxl '{"quality":75}' --wp2 '{"quality":75}' --oxipng '{"level":2}' \
+            -d out icon-large-maskable.png
+          ls -l out
+          for ext in jpg webp avif jxl wp2 png; do test -s "out/icon-large-maskable.$ext"; done
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 24
+        with:
+          name: tecarta-squoosh-cli
+          path: dist/tecarta-squoosh-cli-*.tgz

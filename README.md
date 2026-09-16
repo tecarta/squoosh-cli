@@ -1,3 +1,35 @@
+# Tecarta fork
+
+This is [Tecarta](https://github.com/tecarta)'s fork of
+[Frostoven's Squoosh-with-CLI](https://github.com/frostoven/Squoosh-with-CLI),
+itself a fork of Google's [Squoosh](https://github.com/GoogleChromeLabs/squoosh)
+that kept the CLI alive after Google removed it.
+
+What is different here:
+
+- **Runs on current Node (20, 22, 24 and later).** `libsquoosh` now reads each
+  wasm codec from disk and hands the bytes to Emscripten directly. Previously it
+  let Emscripten's loader find them, which on Node 18+ meant calling the global
+  `fetch()` on a filesystem path and failing. The old workaround, launching node
+  with `--no-experimental-fetch`, stopped working when Node 22 removed the flag.
+- **`--jxl` works again.** libsquoosh's default JPEG XL options were from an
+  older encoder build (`speed`, `nearLossless`) and lacked the `effort` field the
+  bundled encoder requires, so every JXL encode failed. The CLI then logged the
+  rejection but never exited. Defaults now match the encoder, and the CLI exits
+  non-zero on an unhandled failure.
+- **Packages renamed** to `@tecarta/squoosh-cli` and `@tecarta/libsquoosh`, and
+  the child-process launcher (`prod.js` / `debug.js`) is gone; the CLI is a plain
+  bin again.
+- **Self-contained builds.** `scripts/build-cli.sh` produces a tarball with
+  libsquoosh bundled, published as a GitHub release asset. See
+  [cli/README.md](cli/README.md) for install instructions.
+- **CI** builds and smoke-tests every codec on Node 20/22/24, Linux and macOS.
+
+Only `cli/`, `libsquoosh/` and the build plumbing were touched. The web app under
+`src/` is as upstream left it.
+
+---
+
 # Fork details
 
 Google has removed all CLI features from their
