@@ -23,9 +23,12 @@ Install the latest release straight from GitHub. The tarball bundles
 `@tecarta/libsquoosh`, so no npm account or registry configuration is needed:
 
 ```
-$ npm i -g https://github.com/tecarta/squoosh-cli/releases/latest/download/tecarta-squoosh-cli.tgz
+$ npm i -g --allow-remote=all https://github.com/tecarta/squoosh-cli/releases/latest/download/tecarta-squoosh-cli.tgz
 $ squoosh-cli <options...>
 ```
+
+`--allow-remote=all` is needed on npm 12 and later, which refuse tarball URLs by
+default. npm 11 and older ignore the flag.
 
 To pin a version, use the versioned asset from the
 [releases page](https://github.com/tecarta/squoosh-cli/releases), e.g.

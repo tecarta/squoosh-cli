@@ -1,7 +1,7 @@
 #!/bin/sh -e
 # Builds libsquoosh, then packs the CLI with libsquoosh bundled inside it.
 # Output: dist/tecarta-squoosh-cli-<version>.tgz, installable with
-#   npm i -g dist/tecarta-squoosh-cli-<version>.tgz
+#   npm i -g ./dist/tecarta-squoosh-cli-<version>.tgz
 # No npm registry account is needed; the tarball is self-contained.
 cd "$(dirname "$0")/.."
 rm -rf dist && mkdir -p dist
