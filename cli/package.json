@@ -28,7 +28,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@tecarta/libsquoosh": "^0.5.0",
