@@ -46,7 +46,7 @@ the auto optimizer and its Butteraugli target are documented in
 
 ## Build from source
 
-Requires Node 20 or newer.
+Requires Node 18 or newer.
 
 ```sh
 git clone https://github.com/tecarta/squoosh-cli.git
@@ -86,10 +86,10 @@ The unversioned copy is what the install URL above resolves to.
 - **Failures exit non-zero** instead of leaving idle worker threads holding the
   process open.
 - **Packages renamed** to `@tecarta/squoosh-cli` and `@tecarta/libsquoosh`,
-  engines set to Node 20+.
+  engines set to Node 18+.
 - **Self-contained tarball** via `scripts/build-cli.sh`, distributed as a
   GitHub release asset.
-- **CI** builds and runs every codec on Node 20/22/24, Linux and macOS.
+- **CI** builds and runs every codec on Node 18/20/22/24, Linux and macOS.
 
 Codec output is byte-identical to `@frostoven/squoosh-cli` 0.9.1.
 
@@ -102,7 +102,7 @@ Codec output is byte-identical to `@frostoven/squoosh-cli` 0.9.1.
   count, override with `-c`), fixed terminal output corrupting on large
   batches, made custom codec options actually apply, and added Node 18 support.
   Frostoven hosts their variant of the web app at squoosh.frostoven.com.
-- **This fork** adds Node 20+ support without the removed flag, the JXL fix,
+- **This fork** adds Node 20/22/24+ support without the removed flag, the JXL fix,
   and the packaging above.
 
 ## Repository layout
