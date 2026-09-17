@@ -32,7 +32,7 @@ default. npm 11 and older ignore the flag.
 
 To pin a version, use the versioned asset from the
 [releases page](https://github.com/tecarta/squoosh-cli/releases), e.g.
-`.../releases/download/v0.10.0/tecarta-squoosh-cli-0.10.0.tgz`.
+`.../releases/download/v0.10.1/tecarta-squoosh-cli-0.10.1.tgz`.
 
 To build from source (Node 18 or newer):
 
